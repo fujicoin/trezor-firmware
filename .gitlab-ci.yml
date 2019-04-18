@@ -3,6 +3,7 @@ image: debian
 stages:
   - environment
   - test
+  - build
 
 environment:
   stage: environment
@@ -34,5 +35,19 @@ test style:
     - cd core
     - pipenv install
   script:
+    - pipenv run pip show mako
     - pipenv run make style_check
     - pipenv run make templates_check
+
+build core:
+  stage: build
+  image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
+  before_script:
+    - cd core
+  script:
+    - pipenv run make build_cross
+    - pipenv run make build_boardloader
+    - pipenv run make build_bootloader
+    - pipenv run make build_prodtest
+    - pipenv run make build_firmware
+    # - test "$TREZOR_MODEL" = "1" || pipenv run make sizecheck

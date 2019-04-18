@@ -10,6 +10,9 @@ ENV TOOLCHAIN_FLAVOR=$TOOLCHAIN_FLAVOR
 RUN apt-get update && apt-get install -y \
     build-essential wget git libsodium-dev
 
+#libusb-1.0-0-dev
+#libudev-dev
+
 # install dependencies from toolchain source build
 
 RUN if [ "$TOOLCHAIN_FLAVOR" = "src" ]; then \
