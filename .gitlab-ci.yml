@@ -28,13 +28,14 @@ test print info:
     - python --version
     - pipenv --version
 
+before_script:
+  - git submodule update --init --recursive --force
+  - cd core
+  - pipenv install
+
 test style:
   stage: test
   image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
-  before_script:
-    - cd core
-    - pipenv run make vendor
-    - pipenv install
   script:
     - pipenv run pip show mako
     - pipenv run make style_check
@@ -43,10 +44,6 @@ test style:
 build core:
   stage: build
   image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
-  before_script:
-    - cd core
-    - pipenv run make vendor
-    - pipenv install
   script:
     - pipenv run make build_cross
     - pipenv run make build_boardloader
@@ -54,3 +51,12 @@ build core:
     - pipenv run make build_prodtest
     - pipenv run make build_firmware
     # - test "$TREZOR_MODEL" = "1" || pipenv run make sizecheck
+
+test unix:
+  stage: test
+  image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
+  script:
+    - pipenv run make build_unix_noui
+    - pipenv run make test
+    - pipenv run make test_emu
+    - pipenv run make test_emu_monero
