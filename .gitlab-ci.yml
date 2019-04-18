@@ -33,6 +33,7 @@ test style:
   image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
   before_script:
     - cd core
+    - pipenv run make vendor
     - pipenv install
   script:
     - pipenv run pip show mako
@@ -44,6 +45,8 @@ build core:
   image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
   before_script:
     - cd core
+    - pipenv run make vendor
+    - pipenv install
   script:
     - pipenv run make build_cross
     - pipenv run make build_boardloader
