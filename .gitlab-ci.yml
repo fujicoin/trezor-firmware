@@ -1,0 +1,38 @@
+image: debian
+
+stages:
+  - environment
+  - test
+
+environment:
+  stage: environment
+  variables:
+    CONTAINER_NAME: "$CI_REGISTRY/trezor/trezor-firmware/environment"
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+  when: manual
+  script:
+    - docker pull $CONTAINER_NAME:latest || true
+    - docker build --cache-from $CONTAINER_NAME:latest --tag $CONTAINER_NAME:$CI_COMMIT_SHA --tag $CONTAINER_NAME:latest .
+    - docker push $CONTAINER_NAME:$CI_COMMIT_SHA
+    - docker push $CONTAINER_NAME:latest
+
+test print info:
+  stage: test
+  image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
+  script:
+    - python --version
+    - pipenv --version
+
+test style:
+  stage: test
+  image: registry.corp.sldev.cz/trezor/trezor-firmware/environment
+  before_script:
+    - cd core
+    - pipenv install
+  script:
+    - pipenv run make style_check
+    - pipenv run make templates_check
