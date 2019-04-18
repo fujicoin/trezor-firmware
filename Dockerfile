@@ -8,7 +8,7 @@ ENV TOOLCHAIN_FLAVOR=$TOOLCHAIN_FLAVOR
 # install build tools and dependencies
 
 RUN apt-get update && apt-get install -y \
-    build-essential wget git
+    build-essential wget git libsodium-dev
 
 # install dependencies from toolchain source build
 
